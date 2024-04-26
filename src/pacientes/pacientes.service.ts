@@ -45,7 +45,7 @@ export class PacientesService {
         await this.usersRepository.save(pacienteActualizado);
         return { message: 'Paciente actualizado exitosamente.' };
     } else {
-       throw new Error(`No se encontró ningún paciente con el ID ${id}.`);
+       throw new NotFoundException({ message: 'No existe este paciente.' });
     }
 }
 

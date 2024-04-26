@@ -45,7 +45,7 @@ export class MedicosService {
       await this.usersRepository.save(medicoActualizado);
       return { message: 'Medico actualizado exitosamente.' };
     } else {
-      throw new Error(`No se encontró ningún medico con el ID ${id}.`);
+      throw new NotFoundException({ message: 'No existe este medico.' });
     }
   }
 
