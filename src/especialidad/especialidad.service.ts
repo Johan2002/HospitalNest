@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateEspecialidadDto } from './dto/create-especialidad.dto';
 import { UpdateEspecialidadDto } from './dto/update-especialidad.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,10 +17,15 @@ export class EspecialidadService {
   ) {}
 
   async create(createEspecialidadDto: CreateEspecialidadDto) {
-    const especialidad = this.especialidadRepository.create(
-      createEspecialidadDto,
-    );
-    return await this.especialidadRepository.save(especialidad);
+    const especialidad = await this.especialidadRepository.findOne({
+      where: { name: createEspecialidadDto.name },
+    });
+
+    if (especialidad) {
+      throw new BadRequestException('Esa especialidad ya existe.');
+    }
+
+    return await this.especialidadRepository.save(createEspecialidadDto);
   }
 
   async findAll() {
@@ -57,7 +66,7 @@ export class EspecialidadService {
   }
 
   async remove(id: number) {
-    await this.especialidadRepository.softDelete(+id);
+    await this.especialidadRepository.delete(+id);
     return { message: 'Especialidad eliminada.' };
   }
 }
