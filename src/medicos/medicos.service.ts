@@ -35,24 +35,18 @@ export class MedicosService {
   }
 
   async update(id: number, updateMedicoDto: UpdateMedicoDto): Promise<any> {
-    const medico = await this.findOne(id);
-    updateMedicoDto
-      ? (medico.Identificacion = updateMedicoDto.Identificacion)
-      : (medico.Identificacion = medico.Identificacion);
-    updateMedicoDto
-      ? (medico.Nombre = updateMedicoDto.Nombre)
-      : (medico.Nombre = medico.Nombre);
-    updateMedicoDto
-      ? (medico.Apellido = updateMedicoDto.Apellido)
-      : (medico.Apellido = medico.Apellido);
-    updateMedicoDto
-      ? (medico.Telefono = updateMedicoDto.Telefono)
-      : (medico.Telefono = medico.Telefono);
-    updateMedicoDto
-      ? (medico.Correo = updateMedicoDto.Correo)
-      : (medico.Correo = medico.Correo);
-    await this.usersRepository.save(medico);
-    return { message: 'Informacion del medico actualizada.' };
+    const medico = await this.usersRepository.findOne({ where: { id } });
+
+    if (medico) {
+      const medicoActualizado = {
+        ...medico,
+        ...updateMedicoDto,
+      };
+      await this.usersRepository.save(medicoActualizado);
+      return { message: 'Medico actualizado exitosamente.' };
+    } else {
+      throw new Error(`No se encontró ningún medico con el ID ${id}.`);
+    }
   }
 
   async remove(id: number): Promise<any> {
