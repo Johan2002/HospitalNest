@@ -1,4 +1,4 @@
-import { IsEmail, IsInt, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateMedicoDto {
   id: number;
@@ -15,4 +15,7 @@ export class CreateMedicoDto {
   @IsEmail()
   @IsNotEmpty()
   Correo: string;
+  @IsString()
+  @IsOptional()
+  Especialidad: string;
 }

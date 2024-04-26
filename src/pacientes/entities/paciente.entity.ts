@@ -3,6 +3,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -21,4 +22,6 @@ export class Paciente {
   Correo: string;
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

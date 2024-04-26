@@ -1,25 +1,41 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMedicoDto } from './dto/create-medico.dto';
 import { UpdateMedicoDto } from './dto/update-medico.dto';
 import { Medico } from './entities/medico.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Especialidad } from 'src/especialidad/entities/especialidad.entity';
 
 @Injectable()
 export class MedicosService {
   constructor(
     @InjectRepository(Medico)
-    private readonly usersRepository: Repository<Medico>,
+    private readonly medicoRepository: Repository<Medico>,
+
+    @InjectRepository(Especialidad)
+    private readonly especialidadRepository: Repository<Especialidad>,
   ) {}
 
-  async create(createMedicoDto: CreateMedicoDto): Promise<any> {
-    const medico = this.usersRepository.create(createMedicoDto);
-    await this.usersRepository.save(medico);
-    return { message: 'Medico creado exitosamente.' };
+  async create(createMedicoDto: CreateMedicoDto) {
+    
+    const especialidad = await this.especialidadRepository.findOne({ where: { name : createMedicoDto.Especialidad } });
+
+    if (!especialidad) {
+      throw new BadRequestException('No existe esa especialidad.');
+    }
+
+    return await this.medicoRepository.save({
+      ...createMedicoDto,
+      especialidad
+    })
   }
 
   async findAll(): Promise<Medico[]> {
-    const list = await this.usersRepository.find();
+    const list = await this.medicoRepository.find();
     if (!list.length) {
       throw new NotFoundException({ message: 'Lista de medicos vacía.' });
     }
@@ -27,7 +43,7 @@ export class MedicosService {
   }
 
   async findOne(id: number): Promise<Medico> {
-    const medico = await this.usersRepository.findOneBy({ id: id });
+    const medico = await this.medicoRepository.findOneBy({ id: id });
     if (!medico) {
       throw new NotFoundException({ message: 'No existe este medico.' });
     }
@@ -35,22 +51,34 @@ export class MedicosService {
   }
 
   async update(id: number, updateMedicoDto: UpdateMedicoDto): Promise<any> {
-    const medico = await this.usersRepository.findOne({ where: { id } });
+    const medico = await this.medicoRepository.findOne({ where: { id } });
 
-    if (medico) {
-      const medicoActualizado = {
+    if (!medico) {
+      throw new BadRequestException('Medico no existe.');
+    }
+
+    let especialidad;
+    if (updateMedicoDto.Especialidad) {
+      {
+        especialidad = await this.especialidadRepository.findOne({
+          where: { name: updateMedicoDto.Especialidad },
+        });
+      }
+
+      if (!especialidad) {
+        throw new BadRequestException('No se encuentra la especialidad.');
+      }
+
+      return await this.medicoRepository.save({
         ...medico,
         ...updateMedicoDto,
-      };
-      await this.usersRepository.save(medicoActualizado);
-      return { message: 'Medico actualizado exitosamente.' };
-    } else {
-      throw new NotFoundException({ message: 'No existe este medico.' });
+        especialidad,
+      });
     }
   }
 
-  async remove(id: number): Promise<any> {
-    await this.usersRepository.delete(+id);
+  async remove(id: number) {
+    await this.medicoRepository.softDelete(+id);
     return { message: 'Medico eliminado.' };
   }
 }

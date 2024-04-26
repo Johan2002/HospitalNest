@@ -50,7 +50,7 @@ export class PacientesService {
 }
 
   async remove(id: number): Promise<any> {
-    await this.usersRepository.delete(+id);
+    await this.usersRepository.softDelete(+id);
     return { message: 'Paciente eliminado.' };
   }
 }
