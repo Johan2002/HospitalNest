@@ -21,8 +21,9 @@ export class MedicosService {
   ) {}
 
   async create(createMedicoDto: CreateMedicoDto) {
-    
-    const especialidad = await this.especialidadRepository.findOne({ where: { name : createMedicoDto.Especialidad } });
+    const especialidad = await this.especialidadRepository.findOne({
+      where: { name: createMedicoDto.Especialidad },
+    });
 
     if (!especialidad) {
       throw new BadRequestException('No existe esa especialidad.');
@@ -30,8 +31,8 @@ export class MedicosService {
 
     return await this.medicoRepository.save({
       ...createMedicoDto,
-      especialidad
-    })
+      especialidad,
+    });
   }
 
   async findAll(): Promise<Medico[]> {

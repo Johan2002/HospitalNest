@@ -3,6 +3,8 @@ import { PacientesModule } from './pacientes/pacientes.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MedicosModule } from './medicos/medicos.module';
 import { EspecialidadModule } from './especialidad/especialidad.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +25,10 @@ import { EspecialidadModule } from './especialidad/especialidad.module';
     MedicosModule,
 
     EspecialidadModule,
+
+    UsersModule,
+
+    AuthModule,
   ],
 })
 export class AppModule {}

@@ -38,16 +38,16 @@ export class PacientesService {
     const paciente = await this.usersRepository.findOne({ where: { id } });
 
     if (paciente) {
-        const pacienteActualizado = {
-            ...paciente,
-            ...updatePacienteDto
-        };
-        await this.usersRepository.save(pacienteActualizado);
-        return { message: 'Paciente actualizado exitosamente.' };
+      const pacienteActualizado = {
+        ...paciente,
+        ...updatePacienteDto,
+      };
+      await this.usersRepository.save(pacienteActualizado);
+      return { message: 'Paciente actualizado exitosamente.' };
     } else {
-       throw new NotFoundException({ message: 'No existe este paciente.' });
+      throw new NotFoundException({ message: 'No existe este paciente.' });
     }
-}
+  }
 
   async remove(id: number): Promise<any> {
     await this.usersRepository.softDelete(+id);
